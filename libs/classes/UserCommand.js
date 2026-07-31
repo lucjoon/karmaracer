@@ -7,20 +7,23 @@ var UserCommand = function(gameInstance, ts, clockSyncDifference) {
     right:    gameInstance.keyboardHandler.right,
     shoot:    gameInstance.keyboardHandler.shoot
   };
-  if ($('#use_mouse_for_direction').is(':checked')) {
+  // Mouse aims; keyboard always moves at full speed (force 0.025 → multiplier 1).
+  if ($('#use_mouse_for_direction').is(':checked') && gameInstance.steeringWheelController) {
     this.mousePos = {
-      force: gameInstance.steeringWheelController.force,
+      force: 0.025,
       angle: gameInstance.steeringWheelController.angle
     };
+    this.useMouseAim = true;
   } else {
     this.mousePos = {
-      force: 1,
+      force: 0.025,
       angle: gameInstance.myCar ? (gameInstance.myCar.r || 0) : 0
     };
+    this.useMouseAim = false;
   }
   this.ts = ts;
   this.active = true;
-}
+};
 
 UserCommand.prototype.isIdle = function() {
   for (var action in this.actions) {
@@ -29,7 +32,7 @@ UserCommand.prototype.isIdle = function() {
     }
   }
   return true;
-}
+};
 
 UserCommand.prototype.isEqual = function(userCmd) {
   if (typeof userCmd === 'undefined') {
@@ -47,21 +50,25 @@ UserCommand.prototype.isEqual = function(userCmd) {
     return false;
   }
   return true;
-}
+};
 
 UserCommand.prototype.execute = function(body, angleLeftRight, distance) {
-  body.turn(this.mousePos.angle - body.getTransientPosition().r);
+  // Aim with mouse when enabled; otherwise turn with left/right keys only.
+  if (this.useMouseAim) {
+    body.turn(this.mousePos.angle - body.getTransientPosition().r);
+  }
   if (this.actions.left === true) {
     body.turn(-angleLeftRight);
   }
   if (this.actions.right === true) {
     body.turn(angleLeftRight);
   }
+  // Full-speed keyboard drive (ignore mouse-distance force scaling).
   if (this.actions.forward === true) {
-    body.accelerateWithForce(distance, this.mousePos.force);
+    body.accelerate(distance);
   }
   if (this.actions.backward === true) {
-    body.accelerateWithForce(-distance / 2, this.mousePos.force);
+    body.accelerate(-distance / 2);
   }
 };
 

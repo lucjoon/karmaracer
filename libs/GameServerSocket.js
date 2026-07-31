@@ -25,10 +25,10 @@ GameServerSocket.prototype.onConnect = function(client) {
 
   this.registerMethods(client);
 
-  if (!KLib.isUndefined(client.handshake.session)) {
+  if (!KLib.isUndefined(client.handshake.session) && client.handshake.session.accessToken) {
     client.graph.setAccessToken(client.handshake.session.accessToken);
   }
-  
+
   this.clients.push(client);
 };
 
@@ -80,7 +80,7 @@ GameServerSocket.prototype.registerMethods = function(client) {
     user = client.handshake.session.user;
   }
 
-  client.on('ping', function(data, callback) {
+  client.on('karma_ping', function(data, callback) {
     data.serverReceived = Date.now();
     data.serverSent = Date.now();
     callback(null, data);
@@ -207,14 +207,15 @@ GameServerSocket.prototype.registerMethods = function(client) {
 
   client.on('updatePlayerNameTopBar', function(name) {
     try {
-      var user = client.handshake.session.user;
+      var session = client.handshake && client.handshake.session;
+      var user = session && session.user;
       if (!KLib.isUndefined(user)) {
         var UserController = require('./db/UserController');
         user.playerName = name;
         var saveUser = {
           fbid: user.fbid,
           playerName: name
-        }
+        };
         UserController.save(saveUser);
       }
       if (client.player && client.player.playerCar) {

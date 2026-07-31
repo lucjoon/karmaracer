@@ -16,7 +16,11 @@
     this.fps = undefined; // will be defined by requestAnimFrame
     this.debugDraw = false;
     this.carFlameTicks = {};
-    this.interpolator = this.gameInstance.interpolator;
+    this.interpolator = (this.gameInstance && this.gameInstance.interpolator) || {
+      interpData: { ready: false },
+      getInterpData: function() {},
+      interpPos: function(a, b) { return b || a; }
+    };
 
     this.items = items;
     this.worldInfo = worldInfo;
@@ -210,6 +214,9 @@
 
 
   Engine2DCanvas.prototype.drawProjectiles = function(ctx) {
+    if (!this.items.projectiles || !this.items.projectiles.length) {
+      return;
+    }
     if (this.items.projectiles !== null) {
       for (var i = 0; i < this.items.projectiles.length; i++) {
         var c = this.items.projectiles[i];
@@ -336,9 +343,8 @@
   Engine2DCanvas.prototype.tickGameCanvas = function() {
     var now = Date.now();
     if (this.gameInstance) {
-      if (this.interpolator.interpData.ready) {
-        this.draw();
-      }
+      // Always paint the map; cars appear once interpolator has snapshots.
+      this.draw();
     } else {
       this.draw();
     }

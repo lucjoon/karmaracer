@@ -3,24 +3,34 @@
   
   EngineWebGL.prototype.loadTextures = function(callback) {
     var tabTexturesSources = {
-      grass: { file: "../sprites/3d/grass-128.png" },
-      wall: { file: "../sprites/wall.png" },
-      explosion: { file: "../sprites/3d/explosion-256.png" },
-      flame: { file: "../sprites/3d/gun_flame.png" },
-      car: { file: "../sprites/3d/camero-map.png" }
+      grass: { file: "/sprites/3d/grass-128.png" },
+      wall: { file: "/sprites/wall.png" },
+      explosion: { file: "/sprites/3d/explosion-256.png" },
+      flame: { file: "/sprites/3d/gun_flame.png" },
+      car: { file: "/sprites/3d/camero-map.png" }
     };
     var tabTextures = {};
     var promises = [];
     var gl = this.gl;
-    
-    for (var texName in tabTexturesSources) {
-      var texture;
-      tabTextures[texName] = texture = this.gl.createTexture();
+    var that = this;
+    var texNames = Object.keys(tabTexturesSources);
+
+    function bindTextureLoader(name) {
+      var texture = that.gl.createTexture();
+      tabTextures[name] = texture;
       texture.image = new Image();
       texture.loadPromise = $.Deferred();
       promises.push(texture.loadPromise);
-      texture.image.src = tabTexturesSources[texName].file;
-      texture.image.onload = this.handleLoadedTexture(texture).bind(this);
+      texture.image.onload = that.handleLoadedTexture(texture).bind(that);
+      texture.image.onerror = function() {
+        console.error('WebGL texture failed to load:', name, tabTexturesSources[name].file);
+        texture.loadPromise.resolve();
+      };
+      texture.image.src = tabTexturesSources[name].file;
+    }
+
+    for (var i = 0; i < texNames.length; i++) {
+      bindTextureLoader(texNames[i]);
     }
     
     $.when.apply($, promises).done(callback);
@@ -36,10 +46,6 @@
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-      // NEAREST, LINEAR
-      // NEAREST_MIPMAP_NEAREST, LINEAR_MIPMAP_NEAREST
-      // NEAREST_MIPMAP_LINEAR, LINEAR_MIPMAP_LINEAR
-        
       gl.generateMipmap(gl.TEXTURE_2D);
       gl.bindTexture(gl.TEXTURE_2D, null);
       texture.loadPromise.resolve();

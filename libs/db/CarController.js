@@ -7,15 +7,12 @@
   module.exports = function() {
 
     var that = {};
-    DBManager.getCollection('cars', function(err, collection) {
-      that.collection = collection;
-    });
 
     var save = function(item, callback) {
       return DBManager.saveItem(getCollection(), {
         'name': item.name
       }, item, callback);
-    }
+    };
 
     var getInitValue = function(name, path, iw, ih, w, h, displayName, price) {
       return {
@@ -30,7 +27,7 @@
         displayName: displayName,
         price: price
       };
-    }
+    };
 
     var createOrGet = function(carName, initValue, callback) {
       return DBManager.createOrGetItem(that.collection, {
@@ -43,6 +40,9 @@
     };
 
     function getCars(callback) {
+      if (!that.collection) {
+        return callback(null, []);
+      }
       that.collection.find().sort({
         'price': 1
       }).toArray(callback);
@@ -60,10 +60,15 @@
       for (var i = 0; i < cars.length; i++) {
         var c = cars[i];
         createOrGet(c.name, c, function() {});
-      };
+      }
     }
-    initCars();
 
+    DBManager.getCollection('cars', function(err, collection) {
+      that.collection = collection;
+      if (collection) {
+        initCars();
+      }
+    });
 
     return {
       createOrGet: createOrGet,

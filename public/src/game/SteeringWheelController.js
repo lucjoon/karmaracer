@@ -1,12 +1,14 @@
 (function() {
   "use strict";
-  var SteeringWheelController = function(gameInstance, name) {
+  function SteeringWheelController(gameInstance, name) {
     this.name = name;
     this.init(gameInstance);
-  };
+  }
 
   SteeringWheelController.prototype.init = function(gameInstance) {
-    this.m = $('<div id="SteeringWheelController-' + this.name + '" class="SteeringWheelController enable"/>');
+    // Desktop: invisible full-screen mouse tracker (no green "enable" chrome).
+    // Mobile: pad UI with enable toggled on later.
+    this.m = $('<div id="SteeringWheelController-' + this.name + '" class="SteeringWheelController"/>');
     this.acc = $('<div id="SteeringWheelControllerAcc-' + this.name + '" class="SteeringWheelControllerAcc"/>');
     this.m.append(this.acc);
     $('body').append(this.m);
@@ -18,10 +20,19 @@
       w: this.acc.width(),
       h: this.acc.height()
     };
-    this.force = 0;
+    // Default to full acceleration so arrow keys work before the mouse moves.
+    this.force = 0.025;
     this.angle = 0;
     this.updateCenter();
     var that = this;
+
+    if (name === 'main') {
+      this.m.css({
+        'pointer-events': 'auto',
+        'background': 'transparent',
+        'border': 'none'
+      });
+    }
 
     window.onresize = function(e){
       that.resize();

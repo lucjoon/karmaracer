@@ -24,32 +24,43 @@
   };
   
   EngineWebGL.prototype.updateCameraPosition = function() {
+    var myCar = this.gameInstance.myCar;
+    if (!myCar || myCar.dead) {
+      return;
+    }
+
+    var carPos = {
+      x: myCar.x,
+      y: myCar.y,
+      r: myCar.r || 0
+    };
+
     var interpData = this.interpolator.interpData;
-    if (!interpData.ready) {
-      return;
-    }
-    var cars = interpData.snapAfter.cars;
-    if (!cars) {
-      return;
-    }
-    for (var j in cars) {
-      if (j != this.gameInstance.myCar.id) {
-        continue;
-      }
-      var car = cars[j];
-      var carPos = this.interpPosOfCar(j);
-      var player = this.gameInstance.gameInfo[car.id];
-      if (player) {
-        carPos.id = car.id;
-        this.gameInstance.engine.replaceCarBody(carPos);
-        if (!car.dead) {
-          var distFromCamera = 2;
-          this.camera.x = carPos.x - distFromCamera * Math.cos(carPos.r);
-          this.camera.y = carPos.y - distFromCamera * Math.sin(carPos.r);
-          this.camera.r = carPos.r;    
+    if (interpData.ready && interpData.snapAfter && interpData.snapBefore) {
+      var carsAfter = interpData.snapAfter.cars || {};
+      var carsBefore = interpData.snapBefore.cars || {};
+      for (var j in carsAfter) {
+        var car = carsAfter[j];
+        if (!car || car.id != myCar.id) {
+          continue;
         }
+        if (carsBefore[j]) {
+          carPos = this.interpPosOfCar(j);
+        } else {
+          carPos = {
+            x: car.x,
+            y: car.y,
+            r: car.r || 0
+          };
+        }
+        break;
       }
-    }    
+    }
+
+    var distFromCamera = 2;
+    this.camera.x = carPos.x - distFromCamera * Math.cos(carPos.r);
+    this.camera.y = carPos.y - distFromCamera * Math.sin(carPos.r);
+    this.camera.r = carPos.r;
   };
 
 }(Karma.EngineWebGL));

@@ -116,6 +116,7 @@ GameServer.prototype.getSharedObjectsForPlayer = function(player) {
   return {
     snapshot:       this.snapshot.getShared(player.id),
     myCar:          myCar,
+    projectiles:    this.weaponsManager ? this.weaponsManager.getGraphicProjectiles() : [],
     collisionPoints:player.playerCar.weapon ? player.playerCar.weapon.collisionPoints : null,
   }  
 };

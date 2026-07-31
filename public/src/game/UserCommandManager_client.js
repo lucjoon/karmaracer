@@ -76,6 +76,9 @@
     if (typeof player === 'undefined') {
       return;
     }
+    if (!this.gameInstance.cars || !this.gameInstance.cars[player.carImageName]) {
+      return;
+    }
     this.gameInstance.myCar = dup(myCar);
     var carImage = this.gameInstance.cars[player.carImageName];
     myCar.w = carImage.w;

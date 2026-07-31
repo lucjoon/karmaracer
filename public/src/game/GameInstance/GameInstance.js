@@ -23,6 +23,7 @@
     this.scoreTable.setup();
     this.clockSync = new Karma.ClockSync();
     this.interpolator = new Karma.Interpolator(this);
+    this.cars = {};
     this.socketManager = new Karma.SocketManager(this);
 
     this.socketManager.init(this.onInitReceived.bind(this));
@@ -43,13 +44,15 @@
     }
     var myCar = objects.myCar;
     if (myCar) {
-      var player = this.gameInfo[myCar.id];
-      this.gv.show();
-      this.gv.updateEnergy(player.weaponName, myCar.gunLife);      
+      var player = this.gameInfo && this.gameInfo[myCar.id];
+      if (player) {
+        this.gv.show();
+        this.gv.updateEnergy(player.weaponName, myCar.gunLife);
+      }
     } else {
       this.gv.hide();
     }
-    this.items.projectiles = objects.projectiles;
+    this.items.projectiles = objects.projectiles || [];
     this.items.collisionPoints = objects.collisionPoints;
   };  
   
@@ -87,12 +90,22 @@
   
   GameInstance.prototype.onDrawEngineReady = function(err, drawEngine) {
     this.drawEngine = drawEngine;
-    $('#loadingtext').html('');      
+    $('#loadingtext').html('');
     this.userCommandManager = new Karma.UserCommandManager_client(this);
     this.keyboardHandler = new Karma.KeyboardHandler(this);
     document.onkeydown = this.keyboardHandler.handleKeyDown.bind(this.keyboardHandler);
     document.onkeyup = this.keyboardHandler.handleKeyUp.bind(this.keyboardHandler);
-    this.tick();    
+    // Ensure drive keys reach the game, not the top-bar name field.
+    $('#playerName').blur();
+    var $canvas = $('#game-canvas');
+    $canvas.attr('tabindex', '0');
+    $canvas.css('outline', 'none');
+    $canvas.focus();
+    $canvas.on('mousedown', function() {
+      $('#playerName').blur();
+      $(this).focus();
+    });
+    this.tick();
   };
   
   GameInstance.prototype.loadCars = function() {
@@ -118,6 +131,10 @@
           _cars[car.name] = getCarFromDb(car);
         }
         that.cars = _cars;
+        // Retry local car setup if objects arrived before cars were loaded.
+        if (that.userCommandManager && that.userCommandManager.lastReceivedMyCar && !that.myCar) {
+          that.userCommandManager.setMyCar(that.userCommandManager.lastReceivedMyCar);
+        }
       });
     }
   };

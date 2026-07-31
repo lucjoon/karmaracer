@@ -60,6 +60,9 @@
 
 
   function takeSoul(targetID) {
+    if (typeof FB === 'undefined' || !FB.api) {
+      return;
+    }
     var gFriendID = targetID;
     var url = '/me/' + kFB.conf.appName + ':take_the_soul_of?profile=' + gFriendID;
     FB.api(url, 'post', {}, function(response) {});

@@ -1,0 +1,107 @@
+{
+  "base": "http://localhost:8080",
+  "results": [
+    {
+      "url": "http://localhost:8080/",
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [
+        {
+          "message": "Cannot read properties of null (reading 'interpolator')",
+          "name": "TypeError",
+          "stack": "TypeError: Cannot read properties of null (reading 'interpolator')\n    at Engine2DCanvas (http://localhost:8080/dist/all_home.js:214:43)\n    at Karma.getDrawEngine (http://localhost:8080/dist/all_home.js:1068:18)\n    at Minimap.onWorldInfoReady (http://localhost:8080/dist/all_home.js:2404:13)\n    at Socket.onack (http://localhost:8080/socket.io/socket.io.js:985:9)\n    at Socket.onpacket (http://localhost:8080/socket.io/socket.io.js:909:12)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:1647:20)\n    at Manager.ondecoded (http://localhost:8080/socket.io/socket.io.js:428:8)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:4389:20)"
+        },
+        {
+          "message": "Cannot read properties of null (reading 'interpolator')",
+          "name": "TypeError",
+          "stack": "TypeError: Cannot read properties of null (reading 'interpolator')\n    at Engine2DCanvas (http://localhost:8080/dist/all_home.js:214:43)\n    at Karma.getDrawEngine (http://localhost:8080/dist/all_home.js:1068:18)\n    at Minimap.onWorldInfoReady (http://localhost:8080/dist/all_home.js:2404:13)\n    at Socket.onack (http://localhost:8080/socket.io/socket.io.js:985:9)\n    at Socket.onpacket (http://localhost:8080/socket.io/socket.io.js:909:12)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:1647:20)\n    at Manager.ondecoded (http://localhost:8080/socket.io/socket.io.js:428:8)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:4389:20)"
+        },
+        {
+          "message": "Cannot read properties of null (reading 'interpolator')",
+          "name": "TypeError",
+          "stack": "TypeError: Cannot read properties of null (reading 'interpolator')\n    at Engine2DCanvas (http://localhost:8080/dist/all_home.js:214:43)\n    at Karma.getDrawEngine (http://localhost:8080/dist/all_home.js:1068:18)\n    at Minimap.onWorldInfoReady (http://localhost:8080/dist/all_home.js:2404:13)\n    at Socket.onack (http://localhost:8080/socket.io/socket.io.js:985:9)\n    at Socket.onpacket (http://localhost:8080/socket.io/socket.io.js:909:12)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:1647:20)\n    at Manager.ondecoded (http://localhost:8080/socket.io/socket.io.js:428:8)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:4389:20)"
+        },
+        {
+          "message": "Cannot read properties of null (reading 'interpolator')",
+          "name": "TypeError",
+          "stack": "TypeError: Cannot read properties of null (reading 'interpolator')\n    at Engine2DCanvas (http://localhost:8080/dist/all_home.js:214:43)\n    at Karma.getDrawEngine (http://localhost:8080/dist/all_home.js:1068:18)\n    at Minimap.onWorldInfoReady (http://localhost:8080/dist/all_home.js:2404:13)\n    at Socket.onack (http://localhost:8080/socket.io/socket.io.js:985:9)\n    at Socket.onpacket (http://localhost:8080/socket.io/socket.io.js:909:12)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:1647:20)\n    at Manager.ondecoded (http://localhost:8080/socket.io/socket.io.js:428:8)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:4389:20)"
+        },
+        {
+          "message": "Cannot read properties of null (reading 'interpolator')",
+          "name": "TypeError",
+          "stack": "TypeError: Cannot read properties of null (reading 'interpolator')\n    at Engine2DCanvas (http://localhost:8080/dist/all_home.js:214:43)\n    at Karma.getDrawEngine (http://localhost:8080/dist/all_home.js:1068:18)\n    at Minimap.onWorldInfoReady (http://localhost:8080/dist/all_home.js:2404:13)\n    at Socket.onack (http://localhost:8080/socket.io/socket.io.js:985:9)\n    at Socket.onpacket (http://localhost:8080/socket.io/socket.io.js:909:12)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:1647:20)\n    at Manager.ondecoded (http://localhost:8080/socket.io/socket.io.js:428:8)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:4389:20)"
+        },
+        {
+          "message": "Cannot read properties of null (reading 'interpolator')",
+          "name": "TypeError",
+          "stack": "TypeError: Cannot read properties of null (reading 'interpolator')\n    at Engine2DCanvas (http://localhost:8080/dist/all_home.js:214:43)\n    at Karma.getDrawEngine (http://localhost:8080/dist/all_home.js:1068:18)\n    at Minimap.onWorldInfoReady (http://localhost:8080/dist/all_home.js:2404:13)\n    at Socket.onack (http://localhost:8080/socket.io/socket.io.js:985:9)\n    at Socket.onpacket (http://localhost:8080/socket.io/socket.io.js:909:12)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:1647:20)\n    at Manager.ondecoded (http://localhost:8080/socket.io/socket.io.js:428:8)\n    at <anonymous> (http://localhost:8080/socket.io/socket.io.js:1512:15)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:4389:20)"
+        }
+      ],
+      "requestFailures": [
+        {
+          "url": "https://widget.uservoice.com/cnoFgY3wJeve9iGop6UA.js",
+          "method": "GET",
+          "errorText": "net::ERR_BLOCKED_BY_ORB"
+        }
+      ],
+      "ok": false,
+      "status": 304
+    },
+    {
+      "url": "http://localhost:8080/game.mini",
+      "consoleErrors": [],
+      "consoleWarnings": [
+        {
+          "type": "warning",
+          "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+          "url": "http://localhost:8080/game.mini"
+        }
+      ],
+      "pageErrors": [
+        {
+          "message": "Cannot read properties of undefined (reading 'length')",
+          "name": "TypeError",
+          "stack": "TypeError: Cannot read properties of undefined (reading 'length')\n    at Engine2DCanvas.drawProjectiles (http://localhost:8080/dist/all_game.js:409:50)\n    at Engine2DCanvas.drawItems (http://localhost:8080/dist/all_game.js:517:10)\n    at Engine2DCanvas.draw (http://localhost:8080/dist/all_game.js:376:10)\n    at Engine2DCanvas.tickGameCanvas (http://localhost:8080/dist/all_game.js:535:12)\n    at Engine2DCanvas.tick (http://localhost:8080/dist/all_game.js:545:12)\n    at GameInstance.tick (http://localhost:8080/dist/all_game.js:5356:21)\n    at GameInstance.onDrawEngineReady (http://localhost:8080/dist/all_game.js:5298:10)\n    at <anonymous> (http://localhost:8080/dist/all_game.js:1080:9)\n    at imageLoaded (http://localhost:8080/dist/all_game.js:251:18)\n    at onLoadImage (http://localhost:8080/dist/all_game.js:269:7)"
+        }
+      ],
+      "requestFailures": [],
+      "ok": false,
+      "status": 200,
+      "probe": {
+        "hasKarma": true,
+        "hasGameInstance": true,
+        "hasDrawEngine": true,
+        "hasMyCar": true,
+        "carsLoaded": true,
+        "clockSynced": false,
+        "mapName": "mini",
+        "playerName": "SmokeBot"
+      }
+    },
+    {
+      "url": "http://localhost:8080/game.dust",
+      "consoleErrors": [],
+      "consoleWarnings": [
+        {
+          "type": "warning",
+          "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+          "url": "http://localhost:8080/game.dust"
+        }
+      ],
+      "pageErrors": [],
+      "requestFailures": [],
+      "ok": true,
+      "status": 200,
+      "probe": {
+        "hasKarma": true,
+        "hasGameInstance": true,
+        "hasDrawEngine": true,
+        "hasMyCar": true,
+        "carsLoaded": true,
+        "clockSynced": false,
+        "mapName": "dust",
+        "playerName": "SmokeBot"
+      }
+    }
+  ]
+}

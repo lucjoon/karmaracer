@@ -91,6 +91,9 @@
       // we don't have enough data to draw this car
       return;
     }
+    if (!this.gameInstance.cars || !this.gameInstance.cars[player.carImageName]) {
+      return;
+    }
     var car = this.gameInstance.cars[player.carImageName];
     c.playerName = player.playerName;
     c.w = car.w;
@@ -134,6 +137,14 @@
       return;
     }
     var interpData = this.interpolator.interpData;
+    if (!interpData.ready || !interpData.snapAfter || !interpData.snapBefore) {
+      // Still draw local car if we already have it
+      if (this.gameInstance.myCar !== null) {
+        var myPosEarly = this.scalePos(this.gameInstance.myCar);
+        this._drawCar(ctx, this.gameInstance.myCar, myPosEarly);
+      }
+      return;
+    }
     ctx.font = '10px Trebuchet MS';
     var cars = interpData.snapAfter.cars;
     var str = "";
@@ -151,6 +162,9 @@
               var player = this.gameInstance.gameInfo[id];
               if (typeof player === 'undefined') {
                 // we don't have enough data to draw this car
+                continue;
+              }
+              if (!this.gameInstance.cars || !this.gameInstance.cars[player.carImageName]) {
                 continue;
               }
               var carImage = this.gameInstance.cars[player.carImageName];

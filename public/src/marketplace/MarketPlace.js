@@ -5,10 +5,7 @@
   var MarketPlace = {};
 
   MarketPlace.start = function() {
-    var host = window.location.hostname;
-    var connection = io.connect(host, {
-      secure: true
-    });
+    var connection = io.connect();
     Karma.TopBar.setTopBar(connection);
 
     new Karma.CarViewer(connection);

@@ -131,17 +131,18 @@ DBManager.connect(function(err, client) {
   if (err) {
     console.error('db manager connection failed', err);
     return null;
-  }   
-  
+  }
+
   var mapManager = new MapManager(app);
 
   mapManager.init(function(err) {
     if (err) {
       console.error('Error while initializing map manager', err);
     } else {
-      console.info('map manager initialized')
+      console.info('map manager initialized');
+      console.info('Karma Racer listening — open', config.host);
     }
-  })
+  });
 
   app.get('/status', function(req, res) {
     res.render('status', {
@@ -150,7 +151,7 @@ DBManager.connect(function(err, client) {
       numBots: mapManager.getNumBots(),
       loadAvg: os.loadavg()
     });
-  })
+  });
 });
 
 module.exports = app;

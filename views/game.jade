@@ -16,9 +16,9 @@ html
       var GKarmaOptions = {'playerName' : '#{playerName}'};
     script(type='text/javascript', src='/socket.io/socket.io.js')
     script(type='text/javascript', src='/dist/vendor_common.js')
-    script(type='text/javascript', src='/dist/all_game.js')
     - if (default_draw_engine == 'WEBGL')
-      script(type='text/javascript', src='/dist/vendor_webgl.js')      
+      script(type='text/javascript', src='/dist/vendor_webgl.js')
+    script(type='text/javascript', src='/dist/all_game.js')
     link(rel='stylesheet', href='/dist/all_game.css')
     script(type='text/javascript').
       Karma.setGoogleAnalytics();
@@ -78,7 +78,7 @@ html
           input#show_most_up_to_date_myCar.nativeTouchEnabled(type="checkbox")
           label.nativeTouchEnabled(for="show_most_up_to_date_myCar") Show most up to date myCar
         div
-          input#use_mouse_for_direction.nativeTouchEnabled(type="checkbox", checked="checked")
+          input#use_mouse_for_direction.nativeTouchEnabled(type="checkbox")
           label.nativeTouchEnabled(for="use_mouse_for_direction") Use mouse for direction
         div
           input#show_debug_plot.nativeTouchEnabled(type="checkbox")

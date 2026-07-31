@@ -10,26 +10,45 @@
   }
 
   Interpolator.prototype.interpPos = function(beforePos, afterPos, interpPercent) {
+    if (!afterPos && !beforePos) {
+      return { x: 0, y: 0, r: 0 };
+    }
+    if (!beforePos) {
+      return {
+        x: afterPos.x,
+        y: afterPos.y,
+        r: afterPos.r || 0
+      };
+    }
+    if (!afterPos) {
+      return {
+        x: beforePos.x,
+        y: beforePos.y,
+        r: beforePos.r || 0
+      };
+    }
     if (interpPercent > 1 || !$('#interpolate').is(':checked')) {
       // we can't interpolate out of bounds !
       return {
         x: afterPos.x,
         y: afterPos.y,
-        r: afterPos.r
+        r: afterPos.r || 0
       };
     }
-    if (Math.abs(afterPos.r - beforePos.r) > Math.PI) {
+    var beforeR = beforePos.r || 0;
+    var afterR = afterPos.r || 0;
+    if (Math.abs(afterR - beforeR) > Math.PI) {
       // angle goes from 0 to 360 or from 360 to 0
-        if (beforePos.r > Math.PI) {
-          beforePos.r -= 2 * Math.PI;
+        if (beforeR > Math.PI) {
+          beforeR -= 2 * Math.PI;
         } else {
-          beforePos.r += 2 * Math.PI;
+          beforeR += 2 * Math.PI;
         }
     }
     return {
       x: beforePos.x + (afterPos.x - beforePos.x) * interpPercent,
       y: beforePos.y + (afterPos.y - beforePos.y) * interpPercent,
-      r: (beforePos.r + (afterPos.r - beforePos.r) * interpPercent) % (2 * Math.PI)
+      r: (beforeR + (afterR - beforeR) * interpPercent) % (2 * Math.PI)
     };
   };
 

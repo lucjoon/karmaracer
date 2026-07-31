@@ -157,11 +157,18 @@
       return this.handleKeyDownChat(event);
     } else {
       var $pn = $('#playerName');
-      if ($pn.is(':focus')) {
+      var code = event.keyCode;
+      var isDriveKey = code === KEY_UP || code === KEY_DOWN || code === KEY_LEFT ||
+        code === KEY_RIGHT || code === KEY_SHIFT || code === KEY_SPACE ||
+        code === KEY_S || code === KEY_L || code === KEY_P;
+      // Don't let the name field steal arrow/drive keys.
+      if ($pn.is(':focus') && !isDriveKey) {
         return;
-      } else {
-        return this.handleKeyDownGame(event);
       }
+      if ($pn.is(':focus') && isDriveKey) {
+        $pn.blur();
+      }
+      return this.handleKeyDownGame(event);
     }
   };
 

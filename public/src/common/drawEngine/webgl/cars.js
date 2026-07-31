@@ -37,6 +37,10 @@
   EngineWebGL.prototype.drawCars = function() {
     var interpData = this.interpolator.interpData;
     if (!interpData.ready) {
+      // Still draw local car from prediction when snapshots are not ready.
+      if (this.gameInstance.myCar && !this.gameInstance.myCar.dead) {
+        this._drawCar(this.gameInstance.myCar, this.gameInstance.myCar, [1, 0, 1]);
+      }
       return;
     }
     var cars = interpData.snapAfter.cars;
@@ -45,16 +49,17 @@
     }
     for (var j in cars) {
       var car = cars[j];
+      if (!car || typeof interpData.snapBefore.cars[j] === 'undefined') {
+        continue;
+      }
       var carPos = this.interpPosOfCar(j);
       var player = this.gameInstance.gameInfo[car.id];
-      if (player) {
+      if (player && !car.dead) {
         carPos.id = car.id;
         this.gameInstance.engine.replaceCarBody(carPos);
-        if (!car.dead) {
-          this._drawCar(car, carPos, [1, 0, 1], maxLife);
-          var maxLife = this.gameInstance.gameInfo[car.id].maxLife;
-          this.drawLifeBar(car.life, maxLife, carPos);
-        }
+        var maxLife = player.maxLife;
+        this._drawCar(car, carPos, [1, 0, 1]);
+        this.drawLifeBar(car.life, maxLife, carPos);
       }
     }
   };
@@ -63,6 +68,9 @@
     var interpData = this.interpolator.interpData;
     var carBefore = interpData.snapBefore.cars[carIndex];
     var carAfter = interpData.snapAfter.cars[carIndex];
+    if (!carBefore || !carAfter) {
+      return carAfter || carBefore || { x: 0, y: 0, r: 0 };
+    }
     return this.interpolator.interpPos(carBefore, carAfter, interpData.interpPercent);
   };
 

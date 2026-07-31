@@ -6,7 +6,7 @@
   function Map(selector) {
 
     var host = window.location.hostname;
-    this.connection = io.connect(host);
+    this.connection = io.connect();
 
     this.MapItems = {};
     this.selectedItems = [];

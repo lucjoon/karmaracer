@@ -1,0 +1,70 @@
+{
+  "base": "http://localhost:8080",
+  "results": [
+    {
+      "url": "http://localhost:8080/",
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [],
+      "requestFailures": [
+        {
+          "url": "https://widget.uservoice.com/cnoFgY3wJeve9iGop6UA.js",
+          "method": "GET",
+          "errorText": "net::ERR_BLOCKED_BY_ORB"
+        }
+      ],
+      "ok": true,
+      "status": 304
+    },
+    {
+      "url": "http://localhost:8080/game.mini",
+      "consoleErrors": [],
+      "consoleWarnings": [
+        {
+          "type": "warning",
+          "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+          "url": "http://localhost:8080/game.mini"
+        }
+      ],
+      "pageErrors": [],
+      "requestFailures": [],
+      "ok": true,
+      "status": 200,
+      "probe": {
+        "hasKarma": true,
+        "hasGameInstance": true,
+        "hasDrawEngine": true,
+        "hasMyCar": true,
+        "carsLoaded": true,
+        "clockSynced": true,
+        "mapName": "mini",
+        "playerName": "SmokeBot"
+      }
+    },
+    {
+      "url": "http://localhost:8080/game.dust",
+      "consoleErrors": [],
+      "consoleWarnings": [
+        {
+          "type": "warning",
+          "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+          "url": "http://localhost:8080/game.dust"
+        }
+      ],
+      "pageErrors": [],
+      "requestFailures": [],
+      "ok": true,
+      "status": 200,
+      "probe": {
+        "hasKarma": true,
+        "hasGameInstance": true,
+        "hasDrawEngine": true,
+        "hasMyCar": true,
+        "carsLoaded": true,
+        "clockSynced": true,
+        "mapName": "dust",
+        "playerName": "SmokeBot"
+      }
+    }
+  ]
+}

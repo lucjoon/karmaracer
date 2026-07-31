@@ -19,10 +19,7 @@
     $mapsContainer.append(o.join(''));
 
 
-    var host = window.location.hostname;
-    var connection = io.connect(host, {
-      secure: true
-    });
+    var connection = io.connect();
 
     var scroll = function(e, delta) {
       var $b = $objWindow;

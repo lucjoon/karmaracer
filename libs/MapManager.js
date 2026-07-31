@@ -28,9 +28,12 @@ MapManager.prototype.init = function(callback) {
     if (err) {
       callback(err);
       return;
-    } 
-    
-    that.gameServerSocket = new(require('./GameServerSocket'))(that);                
+    }
+
+    that.gameServerSocket = new(require('./GameServerSocket'))(that);
+    if (KLib.isFunction(callback)) {
+      callback(null);
+    }
   });
 };
 
@@ -135,15 +138,20 @@ MapManager.prototype.getMapsWithPlayers = function() {
 
 MapManager.prototype.getVictories = function(callback) {
   var UserController = require('./db/UserController');
+  var collection = UserController.collection();
 
-  UserController.collection().find().sort({
+  if (!collection) {
+    return callback(null, []);
+  }
+
+  collection.find().sort({
     victories: -1
   }).limit(15).toArray(function(err, res) {
     if (err) {
-      console.error('ERROR: Could not get victories', err)
-      callback(err)
+      console.error('ERROR: Could not get victories', err);
+      callback(null, []);
     } else {
-      callback(null, res)
+      callback(null, res);
     }
   });
 }

@@ -15,9 +15,8 @@
   }
   
   SocketManager.prototype.init = function(onInitCallback) {
-    var host = window.location.hostname;
     this.onInitCallback = onInitCallback;
-    this.connection = io.connect(host);
+    this.connection = io.connect();
     this.connection.on('connect', this.onConnected.bind(this));
   };
     
@@ -93,8 +92,8 @@
     var req = {
       clientSent: Date.now()
     };
-    this.connection.emit('ping', req, function(err, res) {
-      if (!err) {
+    this.connection.emit('karma_ping', req, function(err, res) {
+      if (!err && res) {
         res.clientReceived = Date.now();
         clock.pong(res);
       }

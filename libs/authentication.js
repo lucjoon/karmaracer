@@ -21,33 +21,22 @@ var sessionSecret = 'grand mere',
 
 var setup = function(app, io, renderMethod) {
 
+  // Socket.io 1.x auth: attach Express session when present.
+  // Guest mode accepts connections without a session (revival path).
   io.set('authorization', function(data, accept) {
-    // accept(null, true);
-    var parseCookie = cookieParser();
     if (data.headers.cookie) {
-      // if there is, parse the cookie
       var cookie = require('cookie');
       data.cookie = cookie.parse(decodeURIComponent(data.headers.cookie));
-      var connect = require('connect');
-      // note that you will need to use the same key to grad the
-      // session id, as you specified in the Express setup.
       data.sessionID = cookieParser.signedCookie(data.cookie['session.sid'], sessionSecret);
       sessionStore.get(data.sessionID, function(err, session) {
-        if (err || !session) {
-          // if we cannot grab a session, turn down the connection
-          accept('Error', false);
-        } else {
-          // save the session data and accept the connection
+        if (!err && session) {
           data.session = session;
-          // if (KLib.isUndefined(data.session.fbid)) {
-          //   return accept('No FB Id', false);
-          // }
-          accept(null, true);
         }
+        accept(null, true);
       });
+    } else if (CONFIG.guestMode) {
+      accept(null, true);
     } else {
-      // if there isn't, turn down the connection with a message
-      // and leave the function.
       return accept('No cookie transmitted.', false);
     }
   });
@@ -150,8 +139,8 @@ var setup = function(app, io, renderMethod) {
     req.logout();
     delete req.session.fbid;
     delete req.session.user;
-    delete req.session.accessToken /
-      delete req.session.locale;
+    delete req.session.accessToken;
+    delete req.session.locale;
     res.redirect('/');
   });
 
