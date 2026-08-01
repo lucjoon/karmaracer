@@ -1,50 +1,41 @@
 {
   "name": "karmaracer",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Karma Racer — online multiplayer car arena",
   "private": true,
   "engines": {
-    "node": ">=18 <23"
+    "node": ">=20"
   },
   "scripts": {
-    "start": "bash scripts/start.sh",
-    "build": "grunt",
-    "dev": "grunt && bash scripts/start.sh",
-    "postinstall": "grunt",
-    "start:raw": "node server.js",
+    "start": "node server.js",
+    "dev": "npm run build && node server.js",
+    "build": "node scripts/build-client.mjs",
+    "postinstall": "npm run build",
     "test:browser": "node tools/browser-smoke.js"
-  },
-  "devDependencies": {
-    "puppeteer-core": "^21.11.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/lucjoon/karmaracer.git"
   },
   "dependencies": {
-    "async": "1.5.2",
-    "body-parser": "1.15.2",
-    "connect": "2.30.2",
-    "cookie": "0.2.4",
-    "cookie-parser": "1.4.1",
-    "errorhandler": "1.4.3",
-    "express": "4.14.1",
-    "express-session": "1.14.2",
-    "fbgraph": "1.4.4",
-    "grunt": "0.4.5",
-    "grunt-browserify": "4.0.1",
-    "grunt-cli": "1.2.0",
-    "grunt-contrib-concat": "0.5.1",
-    "grunt-contrib-jshint": "0.11.3",
-    "grunt-contrib-less": "1.4.1",
-    "grunt-contrib-uglify": "0.11.1",
-    "grunt-contrib-watch": "0.6.1",
-    "jade": "1.11.0",
-    "method-override": "2.3.7",
-    "mongodb": "2.2.36",
-    "passport": "0.3.2",
-    "passport-facebook": "2.1.1",
-    "socket.io": "1.4.8",
-    "walk": "2.3.9"
+    "async": "^3.2.6",
+    "cookie": "^0.7.2",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "fbgraph": "^1.4.4",
+    "method-override": "^3.0.0",
+    "mongodb": "^6.12.0",
+    "passport": "^0.7.0",
+    "passport-facebook": "^3.0.0",
+    "pug": "^3.0.3",
+    "socket.io": "^4.8.1",
+    "walk": "^2.3.15",
+    "werift": "^0.24.2"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.2",
+    "less": "^4.2.1",
+    "puppeteer-core": "^21.11.0"
   }
 }

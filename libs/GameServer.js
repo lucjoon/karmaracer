@@ -89,7 +89,11 @@ GameServer.prototype.sendPositionsToPlayers = function() {
     var player = this.players[i];    
     var share = this.getSharedObjectsForPlayer(player);
     share.projectiles = projectiles;
-    player.client.emit('objects', share);
+    if (player.client.emitRealtime) {
+      player.client.emitRealtime('objects', share);
+    } else {
+      player.client.emit('objects', share);
+    }
   }
 };
 

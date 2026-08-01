@@ -26,7 +26,7 @@
     var conn = this.gameInstance.socketManager.getConnection();
     if (conn) {
       userCmd.seq = ++this.G_userCommandCounter;
-      conn.emit('user_command', userCmd);
+      this.gameInstance.socketManager.emit('user_command', userCmd);
     }
     this.toAck[userCmd.seq] = userCmd;
   };

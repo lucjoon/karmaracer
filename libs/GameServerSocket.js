@@ -3,6 +3,7 @@ var CONFIG = require('./../config');
 var Player = require('./classes/Player');
 var Car = require('./classes/Physics/Bodies/Car');
 var UserCommandManager = require('./UserCommandManager_server');
+var WebRTCPeer = require('./WebRTCPeer');
 
 var GameServerSocket = function(mapManager) {
   this.homeClientIdCount = 0;
@@ -12,7 +13,7 @@ var GameServerSocket = function(mapManager) {
 
   setInterval(this.broadcastMapsState.bind(this), 1000);
 
-  mapManager.app.io.sockets.on('connection', this.onConnect.bind(this));  
+  mapManager.app.io.on('connection', this.onConnect.bind(this));
 }
 
 GameServerSocket.prototype.onConnect = function(client) {
@@ -36,6 +37,7 @@ GameServerSocket.prototype.onDisconnect = function(client) {
   return function(socket) {
     try {
       console.info('client left:', client.id);
+      WebRTCPeer.closePeer(client);
       this.removeHomeClient(client);
       var idx = this.clients.indexOf(client);
       if (idx != -1) {
@@ -116,14 +118,22 @@ GameServerSocket.prototype.registerMethods = function(client) {
   });
 
   client.on('getMyInfo', function(callback) {
-    if (user) {
+    var guestUser = require('./guestUser');
+    var name = (client.handshake.session && client.handshake.session.user && client.handshake.session.user.playerName) ||
+      (user && user.playerName) ||
+      'Guest';
+    guestUser.ensureGuestUser(client, name, function(err, ensured) {
+      if (err) {
+        return callback(err);
+      }
       var UserController = require('./db/UserController');
-      UserController.createOrGet(user.fbid, user.playerName, function(err, user) {
-        return callback(err, user);
+      UserController.createOrGet(ensured.fbid, ensured.playerName, function(getErr, fresh) {
+        if (!getErr && fresh) {
+          client.handshake.session.user = fresh;
+        }
+        return callback(getErr, fresh || ensured);
       });
-    } else {
-      return callback('not authenticated');
-    }
+    });
   });
 
   client.on('get_map', function(mapName, callback) {
@@ -139,29 +149,35 @@ GameServerSocket.prototype.registerMethods = function(client) {
 
   client.on('enter_map', function(mapName, playerName) {
     console.info(playerName, 'entered', mapName);
-    var gameServer = that.mapManager.gameServers[mapName];
-    if (gameServer) {
-      client.player = new Player(client, playerName);
-      gameServer.addPlayer(client.player);
-      gameServer.broadCastGameInfo();
-      var worldInfo = gameServer.engine.getWorldInfo();
-      worldInfo.gameInfo = gameServer.carManager.getGameInfo();
-      var configShared = {
-        physicalTicksPerSecond:         CONFIG.physicalTicksPerSecond,
-        positionsSocketEmitsPerSecond:  CONFIG.positionsSocketEmitsPerSecond,
-        myCarSpeed:                     CONFIG.myCarSpeed,
-        myCarTurnSpeed:                 CONFIG.myCarTurnSpeed,
-        userCommandsSentPerSecond:      CONFIG.userCommandsSentPerSecond
-      };
-      var objects = gameServer.getSharedObjectsForPlayer(client.player);
-      client.emit('init', {
-        worldInfo: worldInfo,
-        config: configShared,
-        objects: objects
-      });
-      gameServer.clients[client.id] = client;
-      client.gameServer = gameServer;
-    }
+    var guestUser = require('./guestUser');
+    guestUser.ensureGuestUser(client, playerName, function() {
+      var gameServer = that.mapManager.gameServers[mapName];
+      if (gameServer) {
+        client.player = new Player(client, playerName);
+        gameServer.addPlayer(client.player);
+        gameServer.broadCastGameInfo();
+        var worldInfo = gameServer.engine.getWorldInfo();
+        worldInfo.gameInfo = gameServer.carManager.getGameInfo();
+        var configShared = {
+          physicalTicksPerSecond:         CONFIG.physicalTicksPerSecond,
+          positionsSocketEmitsPerSecond:  CONFIG.positionsSocketEmitsPerSecond,
+          myCarSpeed:                     CONFIG.myCarSpeed,
+          myCarTurnSpeed:                 CONFIG.myCarTurnSpeed,
+          userCommandsSentPerSecond:      CONFIG.userCommandsSentPerSecond
+        };
+        var objects = gameServer.getSharedObjectsForPlayer(client.player);
+        client.emit('init', {
+          worldInfo: worldInfo,
+          config: configShared,
+          objects: objects,
+          webrtc: CONFIG.webrtcEnabled
+        });
+        gameServer.clients[client.id] = client;
+        client.gameServer = gameServer;
+        WebRTCPeer.attachEmitRealtime(client);
+        WebRTCPeer.startForClient(client);
+      }
+    });
   });
 
   client.on('init_done', function() {

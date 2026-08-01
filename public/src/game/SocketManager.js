@@ -17,6 +17,7 @@
   SocketManager.prototype.init = function(onInitCallback) {
     this.onInitCallback = onInitCallback;
     this.connection = io.connect();
+    this.webrtc = new Karma.WebRTCChannel(this);
     this.connection.on('connect', this.onConnected.bind(this));
   };
     
@@ -42,7 +43,10 @@
   };
 
   SocketManager.prototype.onConnected = function() {
-    this.setupHandlers();  
+    this.setupHandlers();
+    if (this.webrtc) {
+      this.webrtc.bindSocket(this.connection);
+    }
 
     if (!_.isUndefined(G_mapName)) {
       if (!Karma.LocalStorage.get('playerName') || Karma.LocalStorage.get('playerName').length === 0) {
@@ -92,6 +96,10 @@
     var req = {
       clientSent: Date.now()
     };
+    if (this.webrtc && this.webrtc.isOpen()) {
+      this.webrtc.send('karma_ping', req);
+      return;
+    }
     this.connection.emit('karma_ping', req, function(err, res) {
       if (!err && res) {
         res.clientReceived = Date.now();
@@ -105,6 +113,9 @@
   };
 
   SocketManager.prototype.emit = function(key, data) {
+    if (key === 'user_command' && this.webrtc && this.webrtc.send(key, data)) {
+      return;
+    }
     this.connection.emit(key, data);
   };
   

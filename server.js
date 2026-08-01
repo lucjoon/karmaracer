@@ -1,80 +1,57 @@
-var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
-var errorHandler = require('errorhandler');
 var express = require('express');
-var fs = require('fs');
 var http = require('http');
-var methodOverride = require('method-override');
 var os = require('os');
+var path = require('path');
 var passport = require('passport');
 var session = require('express-session');
-var socketio = require('socket.io');
-var sys = require("util");
+var { Server } = require('socket.io');
 
 var auth = require('./libs/authentication');
 var config = require('./config');
 var KLib = require('./libs/classes/KLib');
 var MapManager = require('./libs/MapManager');
+var DBManager = require('./libs/db/DBManager');
 
-var hostname = os.hostname();
 var app = express();
-var server = http.createServer(app).listen(config.port);
-
-server.on('error', function(e) {
-  console.error('Critical Server Error:', e);
-  console.error(e.stack);
-  process.exit(1)
+var server = http.createServer(app);
+var io = new Server(server, {
+  cors: {
+    origin: true,
+    credentials: true
+  }
 });
 
-var io = socketio.listen(server);
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+app.set('view cache', config.env === 'production');
 
-app.set('view engine', 'jade');
-app.set('views', __dirname + '/views');
-
-app.use(cookieParser());
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
-app.use(bodyParser.json());
-app.use(methodOverride());
-
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(session(auth.sessionOptions));
-
 app.use(passport.initialize());
 app.use(passport.session());
-
-// app.use(auth.reloadUserFromDb);
-
-app.use(errorHandler({
-  dumpExceptions: true,
-  showStack: true
-}));
-
-app.use(express.static(__dirname + '/public'));
-
-
+app.use(express.static(path.join(__dirname, 'public')));
 
 var supportedLanguages = ['fr', 'en'];
 
 function index(req, res, view, draw_engine, opts) {
   var options = {
-    layout: false,
-    'title': 'Karma Racer',
+    title: 'Karma Racer',
     default_draw_engine: draw_engine,
-    locale: req.session.locale
+    locale: req.session.locale,
+    playerName: null,
+    fbid: null
   };
 
-  options['playerName'] = null;
-  options['fbid'] = null;
   if (req.session.user) {
-    options['playerName'] = req.session.user.playerName;
-    options['fbid'] = req.session.user.fbid;
+    options.playerName = req.session.user.playerName;
+    options.fbid = req.session.user.fbid;
   }
   if (KLib.isUndefined(options.locale)) {
     options.locale = 'en_GB';
   }
 
-  options.locale = options.locale.substring(0, 2);
+  options.locale = String(options.locale).substring(0, 2);
   if (supportedLanguages.indexOf(options.locale) === -1) {
     options.locale = 'en';
   }
@@ -87,71 +64,78 @@ function index(req, res, view, draw_engine, opts) {
 
   var map = req.params.map;
   if (!KLib.isUndefined(map)) {
-    options['map'] = map;
+    options.map = map;
   }
 
   res.render(view, options);
 }
 
 auth.setup(app, io, index);
+app.io = io;
 
 app.get('/', auth.reloadUserFromDbIfAuthenticated, function(req, res) {
-  index(req, res, "index.jade", "CANVAS");
+  index(req, res, 'index', 'CANVAS');
 });
 
-app.get('/game\.:map', auth.reloadUserFromDbIfAuthenticated, function(req, res) {
-  index(req, res, "game.jade", req.query['draw'] || "CANVAS");
+app.get('/game.:map', auth.reloadUserFromDbIfAuthenticated, function(req, res) {
+  index(req, res, 'game', req.query.draw || 'CANVAS');
 });
 
-app.get('/mm\.:map', auth.reloadUserFromDbIfAuthenticated, function(req, res) {
-  index(req, res, "mapmaker.jade", "CANVAS");
+app.get('/mm.:map', auth.reloadUserFromDbIfAuthenticated, function(req, res) {
+  index(req, res, 'mapmaker', 'CANVAS');
 });
 
-//ensureAuthenticated
 app.get('/marketplace', auth.reloadUserFromDbIfAuthenticated, function(req, res) {
-  index(req, res, "marketplace.jade", "CANVAS");
+  index(req, res, 'marketplace', 'CANVAS');
 });
 
 app.get('/privacy', function(req, res) {
-  index(req, res, "privacy.jade", "CANVAS");
+  index(req, res, 'privacy', 'CANVAS');
 });
 
 app.get('/tos', function(req, res) {
-  index(req, res, "tos.jade", "CANVAS");
+  index(req, res, 'tos', 'CANVAS');
 });
 
 app.get('/webgl', function(req, res) {
-  res.render('test-client.jade');    
-});  
+  res.render('test-client');
+});
 
-app.io = io;
+app.get('/health', function(req, res) {
+  res.json({ ok: true, env: config.env });
+});
 
-var DBManager = require('./libs/db/DBManager');
-DBManager.connect(function(err, client) {
+DBManager.connect(function(err) {
   if (err) {
     console.error('db manager connection failed', err);
-    return null;
+    process.exit(1);
   }
 
   var mapManager = new MapManager(app);
-
-  mapManager.init(function(err) {
-    if (err) {
-      console.error('Error while initializing map manager', err);
+  mapManager.init(function(initErr) {
+    if (initErr) {
+      console.error('Error while initializing map manager', initErr);
     } else {
       console.info('map manager initialized');
-      console.info('Karma Racer listening — open', config.host);
     }
   });
 
   app.get('/status', function(req, res) {
     res.render('status', {
-      layout: false,
       numServers: Object.keys(mapManager.gameServers).length,
       numBots: mapManager.getNumBots(),
       loadAvg: os.loadavg()
     });
   });
+
+  server.listen(config.port, function() {
+    console.info('Karma Racer listening on port', config.port, '—', config.host || '');
+  });
+});
+
+server.on('error', function(e) {
+  console.error('Critical Server Error:', e);
+  process.exit(1);
 });
 
 module.exports = app;

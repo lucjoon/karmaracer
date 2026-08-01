@@ -62,9 +62,7 @@
 
     o.push('<li id="topBarKarma" class="scoreZone"/>');
     o.push('<li id="fbHighScore" class="scoreZone"/>');
-    if (GKarmaOptions.playerName !== '') {
-      o.push('<li id="topShoping" class="topBarIcon"><a href="/marketplace"><img src="/images/iconShoping.png" id="iconShoping" title="', $.i18n.prop('topbar_shoping'), '"/></a></li>');
-    }
+    o.push('<li id="topShoping" class="topBarIcon"><a href="/marketplace"><img src="/images/iconShoping.png" id="iconShoping" title="', $.i18n.prop('topbar_shoping'), '"/></a></li>');
 
     if (page !== '') {
       o.push('<li id="topFullScreen" class="topBarIcon"><img src="/images/iconFullScreen.png" title="', $.i18n.prop('topbar_toggleFullScreen'), '"/>');

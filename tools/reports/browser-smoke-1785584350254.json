@@ -1,0 +1,80 @@
+{
+  "base": "http://localhost:8080",
+  "results": [
+    {
+      "url": "http://localhost:8080/",
+      "consoleErrors": [],
+      "consoleWarnings": [],
+      "pageErrors": [],
+      "requestFailures": [
+        {
+          "url": "http://widget.uservoice.com/cnoFgY3wJeve9iGop6UA.js",
+          "method": "GET",
+          "errorText": "net::ERR_BLOCKED_BY_ORB"
+        }
+      ],
+      "ok": true,
+      "status": 304
+    },
+    {
+      "url": "http://localhost:8080/game.mini",
+      "consoleErrors": [],
+      "consoleWarnings": [
+        {
+          "type": "warning",
+          "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+          "url": "http://localhost:8080/game.mini"
+        }
+      ],
+      "pageErrors": [],
+      "requestFailures": [],
+      "ok": true,
+      "status": 200,
+      "probe": {
+        "hasKarma": true,
+        "hasGameInstance": true,
+        "hasDrawEngine": true,
+        "hasMyCar": true,
+        "carsLoaded": true,
+        "clockSynced": true,
+        "mapName": "mini",
+        "playerName": "SmokeBot"
+      }
+    },
+    {
+      "url": "http://localhost:8080/game.dust?draw=WEBGL",
+      "consoleErrors": [],
+      "consoleWarnings": [
+        {
+          "type": "warning",
+          "text": "<meta name=\"apple-mobile-web-app-capable\" content=\"yes\"> is deprecated. Please include <meta name=\"mobile-web-app-capable\" content=\"yes\">",
+          "url": "http://localhost:8080/game.dust?draw=WEBGL"
+        }
+      ],
+      "pageErrors": [
+        {
+          "message": "Cannot read properties of null (reading 'VERTEX_SHADER')",
+          "name": "TypeError",
+          "stack": "TypeError: Cannot read properties of null (reading 'VERTEX_SHADER')\n    at createProgramFromScripts (http://localhost:8080/dist/vendor_webgl.js:373:38)\n    at EngineWebGL.initShaders (http://localhost:8080/dist/all_game.js:2058:19)\n    at EngineWebGL (http://localhost:8080/dist/all_game.js:1181:10)\n    at <anonymous> (http://localhost:8080/dist/all_game.js:1021:18)\n    at <anonymous> (http://localhost:8080/dist/all_game.js:2815:11)\n    at <anonymous> (http://localhost:8080/dist/all_game.js:3422:10)\n    at Emitter.emit (http://localhost:8080/socket.io/socket.io.js:627:22)\n    at emitEvent (http://localhost:8080/socket.io/socket.io.js:4089:31)\n    at onevent (http://localhost:8080/socket.io/socket.io.js:4068:14)\n    at onpacket (http://localhost:8080/socket.io/socket.io.js:4036:16)"
+        },
+        {
+          "message": "Interaction failed: No element found for selector: #game-canvas",
+          "stack": "Error: No element found for selector: #game-canvas\n    at assert (/Users/luc/Documents/lucdev/karmaracer/node_modules/puppeteer-core/lib/cjs/puppeteer/util/assert.js:18:15)\n    at CdpFrame.focus (/Users/luc/Documents/lucdev/karmaracer/node_modules/puppeteer-core/lib/cjs/puppeteer/api/Frame.js:747:40)\n    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n    at async collectPageIssues (/Users/luc/Documents/lucdev/karmaracer/tools/browser-smoke.js:103:7)\n    at async main (/Users/luc/Documents/lucdev/karmaracer/tools/browser-smoke.js:271:7)"
+        }
+      ],
+      "requestFailures": [],
+      "ok": false,
+      "status": 200,
+      "probe": {
+        "hasKarma": true,
+        "hasGameInstance": true,
+        "hasDrawEngine": false,
+        "hasMyCar": false,
+        "carsLoaded": true,
+        "clockSynced": true,
+        "mapName": "dust",
+        "playerName": "SmokeBot"
+      }
+    }
+  ]
+}

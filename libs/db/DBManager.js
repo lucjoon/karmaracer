@@ -1,4 +1,4 @@
-var MongoClient = require('mongodb').MongoClient;
+var { MongoClient } = require('mongodb');
 var KLib = require('./../classes/KLib');
 var config = require('../../config');
 
@@ -7,7 +7,7 @@ function matchesCriteria(item, criteria) {
     return true;
   }
   for (var key in criteria) {
-    if (criteria.hasOwnProperty(key) && item[key] !== criteria[key]) {
+    if (Object.prototype.hasOwnProperty.call(criteria, key) && item[key] !== criteria[key]) {
       return false;
     }
   }
@@ -97,20 +97,20 @@ MemoryCollection.prototype.update = function(criteria, update, options, callback
   if (found) {
     var set = (update && update.$set) ? update.$set : update;
     for (var key in set) {
-      if (set.hasOwnProperty(key) && key !== '_id') {
+      if (Object.prototype.hasOwnProperty.call(set, key) && key !== '_id') {
         found[key] = set[key];
       }
     }
   } else if (options.upsert) {
     var created = {};
     for (var c in criteria) {
-      if (criteria.hasOwnProperty(c)) {
+      if (Object.prototype.hasOwnProperty.call(criteria, c)) {
         created[c] = criteria[c];
       }
     }
     var values = (update && update.$set) ? update.$set : (update || {});
     for (var v in values) {
-      if (values.hasOwnProperty(v) && v !== '_id') {
+      if (Object.prototype.hasOwnProperty.call(values, v) && v !== '_id') {
         created[v] = values[v];
       }
     }
@@ -125,9 +125,55 @@ MemoryCollection.prototype.update = function(criteria, update, options, callback
   });
 };
 
-module.exports = function() {
+function wrapMongoCollection(collection) {
+  return {
+    find: function(criteria) {
+      var cursor = collection.find(criteria || {});
+      return {
+        sort: function(spec) {
+          cursor = cursor.sort(spec);
+          return this;
+        },
+        limit: function(n) {
+          cursor = cursor.limit(n);
+          return this;
+        },
+        toArray: function(callback) {
+          cursor.toArray().then(function(results) {
+            callback(null, results);
+          }).catch(callback);
+        }
+      };
+    },
+    insert: function(doc, callback) {
+      collection.insertOne(doc).then(function(result) {
+        var item = Object.assign({ _id: result.insertedId }, doc);
+        callback(null, [item]);
+      }).catch(callback);
+    },
+    update: function(criteria, update, options, callback) {
+      if (typeof options === 'function') {
+        callback = options;
+        options = {};
+      }
+      options = options || {};
+      collection.updateOne(criteria, update, { upsert: !!options.upsert }).then(function() {
+        if (KLib.isFunction(callback)) {
+          callback(null);
+        }
+      }).catch(function(err) {
+        if (KLib.isFunction(callback)) {
+          callback(err);
+        }
+      });
+    }
+  };
+}
+
+module.exports = (function() {
   var that = {};
   var memoryStore = {};
+  var mongoClient = null;
 
   var useMemory = function() {
     that.memory = true;
@@ -160,49 +206,43 @@ module.exports = function() {
       return callback(null, that.db);
     }
 
-    MongoClient.connect(config.mongoUri, function(err, db) {
-      if (err) {
-        console.warn('Mongo unavailable, falling back to memory DB:', err.message);
-        config.useMemoryDb = true;
-        useMemory();
-        return callback(null, that.db);
-      }
-      console.log('CONNECTED TO MONGO');
-      that.db = db;
+    MongoClient.connect(config.mongoUri).then(function(client) {
+      mongoClient = client;
+      var db = client.db();
       that.memory = false;
-      callback(null, db);
+      that.db = {
+        collection: function(name, cb) {
+          process.nextTick(function() {
+            cb(null, wrapMongoCollection(db.collection(name)));
+          });
+        }
+      };
+      console.log('CONNECTED TO MONGO');
+      callback(null, that.db);
+    }).catch(function(err) {
+      console.warn('Mongo unavailable, falling back to memory DB:', err.message);
+      config.useMemoryDb = true;
+      useMemory();
+      callback(null, that.db);
     });
   };
 
   var saveItem = function(collection, criteria, item, callback) {
-    if (item && item !== null) {
-      var s = JSON.stringify(item);
-      if (s === null) {
-        return;
-      }
-      var updateItem = JSON.parse(s);
-      if (updateItem === null) {
-        return;
-      }
-
-      delete updateItem._id;
-      collection.update(criteria, {
-        $set: updateItem
-      }, {
-        upsert: true
-      }, function(err) {
-        if (err) {
-          console.warn('err save item', err.message);
-          if (KLib.isFunction(callback)) {
-            return callback(err);
-          }
-        } else {
-          if (KLib.isFunction(callback)) {
-            return callback(null, item);
-          }
-        }
-      });
+    if (!item) {
+      return;
     }
+    var updateItem = JSON.parse(JSON.stringify(item));
+    delete updateItem._id;
+    collection.update(criteria, { $set: updateItem }, { upsert: true }, function(err) {
+      if (err) {
+        console.warn('err save item', err.message);
+        if (KLib.isFunction(callback)) {
+          return callback(err);
+        }
+      } else if (KLib.isFunction(callback)) {
+        return callback(null, item);
+      }
+    });
   };
 
   var getOne = function(collection, criteria, callback) {
@@ -212,9 +252,8 @@ module.exports = function() {
       }
       if (results.length === 1) {
         return callback(null, results[0]);
-      } else {
-        return callback('itemNotFound');
       }
+      return callback('itemNotFound');
     });
   };
 
@@ -246,5 +285,4 @@ module.exports = function() {
     createOrGetItem: createOrGetItem,
     getOne: getOne
   };
-
-}();
+})();

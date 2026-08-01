@@ -22,11 +22,16 @@
     canvas.width  = $(canvas).css('width').replace('px', '');
     canvas.height  = $(canvas).css('height').replace('px', '');
     
-    this.gl = setupWebGL(canvas, { antialiasing: false });
+    // Prefer raw getContext — setupWebGL() can replace the canvas DOM on failure.
+    this.gl = canvas.getContext('webgl', { antialias: false }) ||
+      canvas.getContext('experimental-webgl', { antialias: false });
     this.camera = { pitch: 83, x: 3, y: 0, z: 1 };
-    
-    var gl = this.gl;        
-    
+
+    if (!this.gl) {
+      return this;
+    }
+
+    var gl = this.gl;
 
     this.initShaders();
  
@@ -69,6 +74,9 @@
   };  
   
   EngineWebGL.prototype.init = function(callback) {
+    if (!this.gl) {
+      return callback(new Error('WebGL context unavailable'));
+    }
     this.loadGroundBuffers();
     this.loadCarBuffers();
     this.loadTextures(callback);

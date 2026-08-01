@@ -1,34 +1,52 @@
 var KLib = require('./../classes/KLib');
 var UserController = require('./../db/UserController');
 var CarController = require('./../db/CarController');
-
+var guestUser = require('./../guestUser');
 
 module.exports = function(client) {
-  var user = client.client;
-  if (!KLib.isUndefined(user)) {
-
-    client.on('getCars', function(callback) {
-      return CarController.getCars(callback);
-    });
-
-    client.on('useCar', function(info, callback) {
+  client.on('useCar', function(info, callback) {
+    guestUser.ensureGuestUser(client, null, function(err, user) {
+      if (err || !user) {
+        return callback(err || 'not authenticated');
+      }
+      if (!user.cars || user.cars.indexOf(info.carName) === -1) {
+        return callback('carNotOwned');
+      }
       user.currentCar = info.carName;
-      UserController.save(user, callback);
+      client.handshake.session.user = user;
+      UserController.save(user, function(saveErr) {
+        return callback(saveErr || null, user);
+      });
     });
+  });
 
-    client.on('buyCar', function(info, callback) {
-      CarController.createOrGet(info.carName, {}, function(err, car) {
-        if (user.money > car.price) {
+  client.on('buyCar', function(info, callback) {
+    guestUser.ensureGuestUser(client, null, function(err, user) {
+      if (err || !user) {
+        return callback(err || 'not authenticated');
+      }
+      CarController.createOrGet(info.carName, {}, function(carErr, car) {
+        if (carErr || !car) {
+          return callback(carErr || 'carNotFound');
+        }
+        if (user.cars && user.cars.indexOf(car.name) !== -1) {
+          return callback(null, user);
+        }
+        if (user.money >= car.price) {
           user.money -= car.price;
-          client.emit('moneyUpdated', user);
+          if (!user.cars) {
+            user.cars = ['c1'];
+          }
           user.cars.push(car.name);
-          UserController.save(user, function(err) {
-            return callback(null, user);
+          client.handshake.session.user = user;
+          client.emit('moneyUpdated', user);
+          UserController.save(user, function(saveErr) {
+            return callback(saveErr || null, user);
           });
         } else {
           return callback('notEnoughMoney');
         }
       });
     });
-  }
-}
+  });
+};

@@ -100,12 +100,15 @@ async function collectPageIssues(browser, url, opts) {
 
   if (opts.interact) {
     try {
-      await page.focus('#game-canvas');
-      await page.keyboard.down('ArrowUp');
-      await sleep(500);
-      await page.keyboard.up('ArrowUp');
-      await page.keyboard.press('Space');
-      await sleep(500);
+      var canvasHandle = await page.$('#game-canvas');
+      if (canvasHandle) {
+        await page.focus('#game-canvas');
+        await page.keyboard.down('ArrowUp');
+        await sleep(500);
+        await page.keyboard.up('ArrowUp');
+        await page.keyboard.press('Space');
+        await sleep(500);
+      }
     } catch (e) {
       issues.pageErrors.push({
         message: 'Interaction failed: ' + e.message,

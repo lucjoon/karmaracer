@@ -86,19 +86,16 @@
         return;
       }
 
-      if (GKarmaOptions.playerName !== '') {
-        that.connection.emit('getMyInfo', function(err, user) {
+      that.connection.emit('getMyInfo', function(infoErr, user) {
+        if (infoErr) {
+          that.outputCars(cars);
+        } else {
           that.outputCars(cars, user);
-          if (KLib.isFunction(callback)) {
-            return callback(null);
-          }
-        });
-      } else {
-        that.outputCars(cars);
+        }
         if (KLib.isFunction(callback)) {
           return callback(null);
         }
-      }
+      });
     });
   };
   CarViewer.prototype.setup = function() {

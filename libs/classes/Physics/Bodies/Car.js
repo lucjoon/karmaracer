@@ -1,6 +1,5 @@
 var KLib = require('../../KLib');
 var KBody = require('./../Body');
-var config = require('../../../../config');
 
 var Car = function(playerCar) {
   KLib.extend(KBody, this);
