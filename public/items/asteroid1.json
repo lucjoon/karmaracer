@@ -1,0 +1,9 @@
+{
+  "name": "asteroid1",
+  "image": {
+    "path": "/sprites/asteroid1.png",
+    "size": 128,
+    "crop": { "x": 0, "y": 0, "w": 128, "h": 128 }
+  },
+  "patternType": "none"
+}

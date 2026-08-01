@@ -1,0 +1,9 @@
+{
+  "name": "station_hull",
+  "image": {
+    "path": "/sprites/station_hull.png",
+    "size": 128,
+    "crop": { "x": 0, "y": 0, "w": 128, "h": 128 }
+  },
+  "patternType": "both"
+}

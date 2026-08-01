@@ -1,0 +1,9 @@
+{
+  "name": "bg_space",
+  "image": {
+    "path": "/sprites/bg_space.png",
+    "size": 512,
+    "crop": { "x": 0, "y": 0, "w": 512, "h": 512 }
+  },
+  "patternType": "both"
+}
